@@ -9,12 +9,14 @@ class SearchBarTextField extends StatelessWidget {
   final Color? iconColor;
   final Widget? child;
   final String hintText;
+  final VoidCallback onTap;
   final TextEditingController controller;
   const SearchBarTextField({
     Key? key,
     this.color,
     this.child,
     this.iconColor,
+    required this.onTap,
     required this.hintText,
     required this.controller,
   }) : super(key: key);
@@ -62,7 +64,7 @@ class SearchBarTextField extends StatelessWidget {
               borderColor: kBorderGreyColor,
               color: kBlueGradientColor,
               borderRadius: 48,
-              onTap: () {},
+              onTap: onTap,
               child: child ?? const Text("Shorten Now", style: kButtonStyle),
             ),
           ),

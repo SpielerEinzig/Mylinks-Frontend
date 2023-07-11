@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import '../../core/models/link_model.dart';
 import '../shared/text_styles.dart';
 
-TableRow linkTableItem({required LinkModel linkModel, required bool mobile}) {
+TableRow linkTableItem(
+    {required LinkModel linkModel,
+    required bool mobile,
+    required VoidCallback onTap}) {
   if (mobile) {
     return TableRow(
       children: <Widget>[
@@ -21,7 +24,7 @@ TableRow linkTableItem({required LinkModel linkModel, required bool mobile}) {
                   ),
                 ),
                 IconButton(
-                  onPressed: () {},
+                  onPressed: onTap,
                   icon: const Icon(Icons.copy),
                 ),
               ],

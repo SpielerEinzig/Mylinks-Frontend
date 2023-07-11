@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:my_links/core/provider/links_provider.dart';
 import 'package:my_links/core/provider/user_provider.dart';
-import 'package:my_links/ui/views/web/auth_home.dart';
+import 'package:my_links/ui/views/mobile/auth_home_mobile.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -9,6 +10,7 @@ void main() {
   return runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => UserProvider()),
+      ChangeNotifierProvider(create: (_) => LinksProvider()),
     ],
     child: const MyApp(),
   ));
@@ -26,7 +28,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const AuthHome(),
+      home: const AuthHomeMobile(),
     );
   }
 }

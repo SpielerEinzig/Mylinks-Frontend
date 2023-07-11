@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:my_links/core/provider/links_provider.dart';
 import 'package:my_links/core/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../../../core/constants/constants.dart';
 import '../../shared/colors.dart';
 import '../../shared/shared_utils.dart';
 import '../../shared/text_styles.dart';
@@ -10,6 +11,7 @@ import '../../widgets/custom_button.dart';
 import '../../widgets/gradient_text.dart';
 import '../../widgets/link_table_item.dart';
 import '../../widgets/search_bar_text_field.dart';
+import '../../widgets/show_snackbar.dart';
 import '../../widgets/table_header_text.dart';
 
 class HomePage extends StatefulWidget {
@@ -23,10 +25,24 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _linkController = TextEditingController();
   final SharedUtils _utils = SharedUtils();
 
+  fetchLinks() async {
+    Map? userDetails = context.read<UserProvider>().getUserDetails;
+
+    if (userDetails != null) {
+      context.read<LinksProvider>().fetchAffiliatedLinks(userDetails['userId']);
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchLinks();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Consumer<UserProvider>(
-      builder: (context, userProvider, child) {
+    return Consumer<UserProvider>(builder: (context, userProvider, child) {
+      return Consumer<LinksProvider>(builder: (context, linkProvider, child) {
         return Scaffold(
           body: Container(
             width: double.infinity,
@@ -56,6 +72,15 @@ class _HomePageState extends State<HomePage> {
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 100),
                         child: SearchBarTextField(
+                          onTap: () async {
+                            if (_linkController.text.isNotEmpty) {
+                              await linkProvider.createLink(
+                                  userId:
+                                      userProvider.getUserDetails!['userId'],
+                                  longUrl: _linkController.text,
+                                  shortUrl: null);
+                            }
+                          },
                           hintText: "Enter the link here",
                           controller: _linkController,
                         ),
@@ -67,7 +92,9 @@ class _HomePageState extends State<HomePage> {
                       borderColor: kBorderGreyColor,
                       color: kPrimaryColor,
                       borderRadius: 48,
-                      onTap: () {},
+                      onTap: () async {
+                        if (_linkController.text.isNotEmpty) {}
+                      },
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -92,59 +119,84 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
                 Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                        horizontal: _utils.getSize(context).width * 0.088),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: _utils.getSize(context).height * 0.08),
-                        Text("History (${linkModels.length})",
-                            style: kSubheadingTextStyle),
-                        const SizedBox(height: 20),
-                        Expanded(
-                          child: Container(
-                            color: kPrimaryColor.withOpacity(0.6),
-                            child: SingleChildScrollView(
-                              child: Table(
-                                border: TableBorder.all(color: kPrimaryColor),
-                                columnWidths: const <int, TableColumnWidth>{
-                                  0: FlexColumnWidth(55),
-                                  1: FlexColumnWidth(60),
-                                  2: FixedColumnWidth(100),
-                                  3: FixedColumnWidth(100),
-                                  4: FixedColumnWidth(150),
-                                },
-                                defaultVerticalAlignment:
-                                    TableCellVerticalAlignment.middle,
-                                children: <TableRow>[
-                                  const TableRow(
-                                    children: <Widget>[
-                                      TableHeaderText(text: "Short link"),
-                                      TableHeaderText(text: "Original link"),
-                                      TableHeaderText(text: "QR code"),
-                                      TableHeaderText(text: "Clicks"),
-                                      TableHeaderText(text: "Date"),
-                                    ],
+                  child: linkProvider.getLinkList.isEmpty
+                      ? const Center(
+                          child: Text(
+                          "You haven't shortened any link",
+                          style: kTinyWhiteTextStyle,
+                        ))
+                      : Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal:
+                                  _utils.getSize(context).width * 0.088),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                  height:
+                                      _utils.getSize(context).height * 0.08),
+                              Text(
+                                  "History (${linkProvider.getLinkList.length})",
+                                  style: kSubheadingTextStyle),
+                              const SizedBox(height: 20),
+                              Expanded(
+                                child: Container(
+                                  color: kPrimaryColor.withOpacity(0.6),
+                                  child: SingleChildScrollView(
+                                    child: Table(
+                                      border:
+                                          TableBorder.all(color: kPrimaryColor),
+                                      columnWidths: const <int,
+                                          TableColumnWidth>{
+                                        0: FlexColumnWidth(55),
+                                        1: FlexColumnWidth(60),
+                                        2: FixedColumnWidth(100),
+                                        3: FixedColumnWidth(100),
+                                        4: FixedColumnWidth(150),
+                                      },
+                                      defaultVerticalAlignment:
+                                          TableCellVerticalAlignment.middle,
+                                      children: <TableRow>[
+                                        const TableRow(
+                                          children: <Widget>[
+                                            TableHeaderText(text: "Short link"),
+                                            TableHeaderText(
+                                                text: "Original link"),
+                                            TableHeaderText(text: "QR code"),
+                                            TableHeaderText(text: "Clicks"),
+                                            TableHeaderText(text: "Date"),
+                                          ],
+                                        ),
+                                        ...linkProvider.getLinkList
+                                            .map((linkModel) => linkTableItem(
+                                                  linkModel: linkModel,
+                                                  mobile: false,
+                                                  onTap: () {
+                                                    Clipboard.setData(
+                                                        ClipboardData(
+                                                            text: linkModel
+                                                                .shorUrl));
+
+                                                    showSnackBar(
+                                                        context: context,
+                                                        text: "Copied item");
+                                                  },
+                                                ))
+                                            .toList(),
+                                      ],
+                                    ),
                                   ),
-                                  ...linkModels
-                                      .map((linkModel) => linkTableItem(
-                                          linkModel: linkModel, mobile: false))
-                                      .toList(),
-                                ],
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
-                  ),
                 ),
               ],
             ),
           ),
         );
-      },
-    );
+      });
+    });
   }
 }

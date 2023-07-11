@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:my_links/ui/views/mobile/home_mobile.dart';
 import 'package:my_links/ui/widgets/search_bar_text_field.dart';
 
@@ -13,7 +12,6 @@ import '../../widgets/dialogs/log_in_dialog.dart';
 import '../../widgets/dialogs/sign_up_dialog.dart';
 import '../../widgets/gradient_text.dart';
 import '../../widgets/link_table_item.dart';
-import '../../widgets/show_snackbar.dart';
 import '../../widgets/table_header_text.dart';
 
 class AuthHomeMobile extends StatefulWidget {
@@ -160,17 +158,9 @@ class _AuthHomeMobileState extends State<AuthHomeMobile> {
                             ),
                             ...linkModels
                                 .map((linkModel) => linkTableItem(
-                                      linkModel: linkModel,
-                                      mobile: true,
-                                      onTap: () {
-                                        Clipboard.setData(ClipboardData(
-                                            text: linkModel.shorUrl));
-
-                                        showSnackBar(
-                                            context: context,
-                                            text: "Copied item");
-                                      },
-                                    ))
+                                    linkModel: linkModel,
+                                    mobile: true,
+                                    context: context))
                                 .toList(),
                           ],
                         ),

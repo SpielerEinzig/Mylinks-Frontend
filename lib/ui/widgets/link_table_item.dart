@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:my_links/ui/widgets/show_snackbar.dart';
 
 import '../../core/models/link_model.dart';
 import '../shared/text_styles.dart';
 
 TableRow linkTableItem(
-    {required LinkModel linkModel,
-    required bool mobile,
-    required VoidCallback onTap}) {
+    {required LinkModel linkModel, required bool mobile, required context}) {
   if (mobile) {
     return TableRow(
       children: <Widget>[
@@ -18,13 +18,17 @@ TableRow linkTableItem(
               children: [
                 Expanded(
                   child: Text(
-                    linkModel.longUrl,
+                    linkModel.shorUrl,
                     overflow: TextOverflow.ellipsis,
                     style: kTinyGreyTextStyle,
                   ),
                 ),
                 IconButton(
-                  onPressed: onTap,
+                  onPressed: () {
+                    Clipboard.setData(ClipboardData(text: linkModel.shorUrl));
+
+                    showSnackBar(context: context, text: "Copied item");
+                  },
                   icon: const Icon(Icons.copy),
                 ),
               ],
@@ -33,7 +37,7 @@ TableRow linkTableItem(
         ),
         Center(
           child: Text(
-            linkModel.shorUrl,
+            linkModel.longUrl,
             overflow: TextOverflow.ellipsis,
             style: kTinyGreyTextStyle,
           ),
@@ -58,7 +62,7 @@ TableRow linkTableItem(
               children: [
                 Expanded(
                   child: Text(
-                    linkModel.longUrl,
+                    linkModel.shorUrl,
                     overflow: TextOverflow.ellipsis,
                     style: kTinyGreyTextStyle,
                   ),
@@ -73,7 +77,7 @@ TableRow linkTableItem(
         ),
         Center(
           child: Text(
-            linkModel.shorUrl,
+            linkModel.longUrl,
             overflow: TextOverflow.ellipsis,
             style: kTinyGreyTextStyle,
           ),

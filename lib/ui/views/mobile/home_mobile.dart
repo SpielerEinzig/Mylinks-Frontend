@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../../core/provider/links_provider.dart';
@@ -11,7 +10,6 @@ import '../../widgets/custom_button.dart';
 import '../../widgets/gradient_text.dart';
 import '../../widgets/link_table_item.dart';
 import '../../widgets/search_bar_text_field.dart';
-import '../../widgets/show_snackbar.dart';
 import '../../widgets/table_header_text.dart';
 
 class HomeMobile extends StatefulWidget {
@@ -157,17 +155,9 @@ class _HomeMobileState extends State<HomeMobile> {
                                 ),
                                 ...linkProvider.getLinkList
                                     .map((linkModel) => linkTableItem(
-                                          linkModel: linkModel,
-                                          mobile: true,
-                                          onTap: () {
-                                            Clipboard.setData(ClipboardData(
-                                                text: linkModel.shorUrl));
-
-                                            showSnackBar(
-                                                context: context,
-                                                text: "Copied item");
-                                          },
-                                        ))
+                                        linkModel: linkModel,
+                                        mobile: true,
+                                        context: context))
                                     .toList(),
                               ],
                             ),

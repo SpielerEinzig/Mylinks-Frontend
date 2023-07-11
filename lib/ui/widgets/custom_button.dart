@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class CustomButton extends StatelessWidget {
+class CustomButton extends StatefulWidget {
   final Widget child;
   final EdgeInsetsGeometry padding;
   final Color borderColor;
   final Color color;
   final double borderRadius;
-  final VoidCallback onTap;
+  final Function() onTap;
   const CustomButton({
     Key? key,
     required this.child,
@@ -18,22 +18,41 @@ class CustomButton extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<CustomButton> createState() => _CustomButtonState();
+}
+
+class _CustomButtonState extends State<CustomButton> {
+  bool loading = false;
+
+  @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: onTap,
+      onPressed: () async {
+        setState(() {
+          loading = true;
+        });
+
+        await widget.onTap();
+
+        setState(() {
+          loading = false;
+        });
+      },
       style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all<Color>(color),
+        backgroundColor: MaterialStateProperty.all<Color>(widget.color),
         padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-          padding,
+          widget.padding,
         ),
         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
           RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(borderRadius),
-            side: BorderSide(color: borderColor),
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            side: BorderSide(color: widget.borderColor),
           ),
         ),
       ),
-      child: child,
+      child: loading
+          ? const CircularProgressIndicator(color: Colors.white)
+          : widget.child,
     );
   }
 }

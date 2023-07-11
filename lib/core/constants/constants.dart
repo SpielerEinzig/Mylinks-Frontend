@@ -1,5 +1,8 @@
 import '../models/link_model.dart';
 
+const String baseUrl = "https://mylinks-s50h.onrender.com/";
+const Duration duration = Duration(milliseconds: 50);
+
 List<LinkModel> linkModels = [
   LinkModel(
       id: "id",

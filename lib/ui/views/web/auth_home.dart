@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:my_links/ui/shared/colors.dart';
+import 'package:my_links/ui/shared/page_navigation.dart';
 import 'package:my_links/ui/shared/shared_utils.dart';
 import 'package:my_links/ui/shared/text_styles.dart';
+import 'package:my_links/ui/views/web/home_page.dart';
 import 'package:my_links/ui/widgets/custom_button.dart';
+import 'package:my_links/ui/widgets/dialogs/log_in_dialog.dart';
+import 'package:my_links/ui/widgets/dialogs/sign_up_dialog.dart';
 import 'package:my_links/ui/widgets/gradient_text.dart';
 import 'package:my_links/ui/widgets/link_table_item.dart';
 import 'package:my_links/ui/widgets/table_header_text.dart';
@@ -19,6 +23,7 @@ class AuthHome extends StatefulWidget {
 
 class _AuthHomeState extends State<AuthHome> {
   final TextEditingController _linkController = TextEditingController();
+  final PageNavigation _navigation = PageNavigation();
   final SharedUtils _utils = SharedUtils();
 
   @override
@@ -56,7 +61,20 @@ class _AuthHomeState extends State<AuthHome> {
                       borderColor: kBorderGreyColor,
                       color: kPrimaryColor,
                       borderRadius: 48,
-                      onTap: () {},
+                      onTap: () async {
+                        String? status = await showDialog(
+                            context: context,
+                            builder: (context) {
+                              return const LogInDialog();
+                            });
+
+                        if (status != null && status == 'success') {
+                          await Future.delayed(duration, () {
+                            _navigation.pushPage(
+                                context: context, page: const HomePage());
+                          });
+                        }
+                      },
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -73,7 +91,20 @@ class _AuthHomeState extends State<AuthHome> {
                       borderColor: kBorderGreyColor,
                       color: kBlueGradientColor,
                       borderRadius: 48,
-                      onTap: () {},
+                      onTap: () async {
+                        String? status = await showDialog(
+                            context: context,
+                            builder: (context) {
+                              return const SignUpDialog();
+                            });
+
+                        if (status != null && status == 'success') {
+                          await Future.delayed(duration, () {
+                            _navigation.pushPage(
+                                context: context, page: const HomePage());
+                          });
+                        }
+                      },
                       child: const Text("Register Now", style: kButtonStyle),
                     ),
                   ],

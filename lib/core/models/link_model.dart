@@ -18,7 +18,7 @@ class LinkModel {
   LinkModel.fromJson(Map<String, dynamic> json)
       : id = json['_id'],
         shorUrl = json['shortURL'],
-        longUrl = json['shortURL'],
+        longUrl = json['longURL'],
         qrCode = json['QRCodeImage'],
         clickCount = json['linkClickCount'],
         created = DateTime.parse(json['createdAt']);

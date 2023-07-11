@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:my_links/ui/shared/colors.dart';
 import 'package:my_links/ui/shared/page_navigation.dart';
 import 'package:my_links/ui/shared/shared_utils.dart';
@@ -14,7 +13,6 @@ import 'package:my_links/ui/widgets/table_header_text.dart';
 
 import '../../../core/constants/constants.dart';
 import '../../widgets/search_bar_text_field.dart';
-import '../../widgets/show_snackbar.dart';
 
 class AuthHome extends StatefulWidget {
   const AuthHome({Key? key}) : super(key: key);
@@ -189,17 +187,9 @@ class _AuthHomeState extends State<AuthHome> {
                               ),
                               ...linkModels
                                   .map((linkModel) => linkTableItem(
-                                        linkModel: linkModel,
-                                        mobile: false,
-                                        onTap: () {
-                                          Clipboard.setData(ClipboardData(
-                                              text: linkModel.shorUrl));
-
-                                          showSnackBar(
-                                              context: context,
-                                              text: "Copied item");
-                                        },
-                                      ))
+                                      linkModel: linkModel,
+                                      mobile: false,
+                                      context: context))
                                   .toList(),
                             ],
                           ),

@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:my_links/core/services/auth_service.dart';
+import 'package:my_links/core/services/storage_service.dart';
 
 Map? _userDetails;
 
 class UserProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
+  final StorageService _storageService = StorageService();
 
   Map? get getUserDetails => _userDetails;
+
+  storeUserCredentials(Map credentials) {
+    _userDetails = credentials;
+    notifyListeners();
+  }
 
   Future<String> login({
     required String email,
@@ -16,6 +23,10 @@ class UserProvider with ChangeNotifier {
         await _authService.login(email: email, password: password);
 
     _userDetails = fetchedDetails['data'];
+
+    if (fetchedDetails['data'] != null) {
+      _storageService.storeUserAuthCredentials(fetchedDetails['data']);
+    }
 
     notifyListeners();
 
@@ -31,6 +42,10 @@ class UserProvider with ChangeNotifier {
         email: email, password: password, username: username);
 
     _userDetails = fetchedDetails['data'];
+
+    if (fetchedDetails['data'] != null) {
+      _storageService.storeUserAuthCredentials(fetchedDetails['data']);
+    }
 
     notifyListeners();
 

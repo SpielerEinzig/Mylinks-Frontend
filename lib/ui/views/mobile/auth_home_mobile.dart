@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:my_links/ui/views/mobile/home_mobile.dart';
 import 'package:my_links/ui/widgets/search_bar_text_field.dart';
 
 import '../../../core/constants/constants.dart';
 import '../../shared/colors.dart';
+import '../../shared/page_navigation.dart';
 import '../../shared/shared_utils.dart';
 import '../../shared/text_styles.dart';
 import '../../widgets/custom_button.dart';
+import '../../widgets/dialogs/log_in_dialog.dart';
+import '../../widgets/dialogs/sign_up_dialog.dart';
 import '../../widgets/gradient_text.dart';
 import '../../widgets/link_table_item.dart';
+import '../../widgets/show_snackbar.dart';
 import '../../widgets/table_header_text.dart';
 
 class AuthHomeMobile extends StatefulWidget {
@@ -19,6 +25,7 @@ class AuthHomeMobile extends StatefulWidget {
 
 class _AuthHomeMobileState extends State<AuthHomeMobile> {
   final TextEditingController _linkController = TextEditingController();
+  final PageNavigation _navigation = PageNavigation();
   final SharedUtils _utils = SharedUtils();
 
   @override
@@ -56,7 +63,20 @@ class _AuthHomeMobileState extends State<AuthHomeMobile> {
                       borderColor: kBorderGreyColor,
                       color: kPrimaryColor,
                       borderRadius: 48,
-                      onTap: () {},
+                      onTap: () async {
+                        String? status = await showDialog(
+                            context: context,
+                            builder: (context) {
+                              return const LogInDialog();
+                            });
+
+                        if (status != null && status == 'success') {
+                          await Future.delayed(duration, () {
+                            _navigation.replacePage(
+                                context: context, page: const HomeMobile());
+                          });
+                        }
+                      },
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -95,6 +115,20 @@ class _AuthHomeMobileState extends State<AuthHomeMobile> {
                   SearchBarTextField(
                       hintText: "Enter the link here",
                       controller: _linkController,
+                      onTap: () async {
+                        String? status = await showDialog(
+                            context: context,
+                            builder: (context) {
+                              return const LogInDialog();
+                            });
+
+                        if (status != null && status == 'success') {
+                          await Future.delayed(duration, () {
+                            _navigation.replacePage(
+                                context: context, page: const HomeMobile());
+                          });
+                        }
+                      },
                       child: const Icon(
                         Icons.arrow_forward,
                         color: Colors.white,
@@ -126,7 +160,17 @@ class _AuthHomeMobileState extends State<AuthHomeMobile> {
                             ),
                             ...linkModels
                                 .map((linkModel) => linkTableItem(
-                                    linkModel: linkModel, mobile: true))
+                                      linkModel: linkModel,
+                                      mobile: true,
+                                      onTap: () {
+                                        Clipboard.setData(ClipboardData(
+                                            text: linkModel.shorUrl));
+
+                                        showSnackBar(
+                                            context: context,
+                                            text: "Copied item");
+                                      },
+                                    ))
                                 .toList(),
                           ],
                         ),
@@ -145,7 +189,22 @@ class _AuthHomeMobileState extends State<AuthHomeMobile> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextButton(onPressed: () {}, child: const Text("Register now")),
+            TextButton(
+                onPressed: () async {
+                  String? status = await showDialog(
+                      context: context,
+                      builder: (context) {
+                        return const SignUpDialog();
+                      });
+
+                  if (status != null && status == 'success') {
+                    await Future.delayed(duration, () {
+                      _navigation.pushPage(
+                          context: context, page: const HomeMobile());
+                    });
+                  }
+                },
+                child: const Text("Register now")),
             const Text("To enjoy unlimited usage", style: kTinyGreyTextStyle),
           ],
         ),

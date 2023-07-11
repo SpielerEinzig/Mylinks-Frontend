@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:my_links/ui/shared/colors.dart';
 import 'package:my_links/ui/shared/page_navigation.dart';
 import 'package:my_links/ui/shared/shared_utils.dart';
@@ -13,6 +14,7 @@ import 'package:my_links/ui/widgets/table_header_text.dart';
 
 import '../../../core/constants/constants.dart';
 import '../../widgets/search_bar_text_field.dart';
+import '../../widgets/show_snackbar.dart';
 
 class AuthHome extends StatefulWidget {
   const AuthHome({Key? key}) : super(key: key);
@@ -140,6 +142,20 @@ class _AuthHomeState extends State<AuthHome> {
                       child: SearchBarTextField(
                         hintText: "Enter the link here",
                         controller: _linkController,
+                        onTap: () async {
+                          String? status = await showDialog(
+                              context: context,
+                              builder: (context) {
+                                return const LogInDialog();
+                              });
+
+                          if (status != null && status == 'success') {
+                            await Future.delayed(duration, () {
+                              _navigation.replacePage(
+                                  context: context, page: const HomePage());
+                            });
+                          }
+                        },
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -173,7 +189,17 @@ class _AuthHomeState extends State<AuthHome> {
                               ),
                               ...linkModels
                                   .map((linkModel) => linkTableItem(
-                                      linkModel: linkModel, mobile: false))
+                                        linkModel: linkModel,
+                                        mobile: false,
+                                        onTap: () {
+                                          Clipboard.setData(ClipboardData(
+                                              text: linkModel.shorUrl));
+
+                                          showSnackBar(
+                                              context: context,
+                                              text: "Copied item");
+                                        },
+                                      ))
                                   .toList(),
                             ],
                           ),

@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:my_links/core/provider/user_provider.dart';
 import 'package:my_links/ui/views/web/auth_home.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+
+  return runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => UserProvider()),
+    ],
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {

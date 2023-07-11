@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:my_links/core/provider/links_provider.dart';
 import 'package:my_links/core/provider/user_provider.dart';
-import 'package:my_links/ui/views/mobile/auth_home_mobile.dart';
+import 'package:my_links/ui/views/screen_size_navigator.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  ///init hive
+  await Hive.initFlutter();
+
+  ///open box
+  //var storage =
+  await Hive.openBox("storage");
 
   return runApp(MultiProvider(
     providers: [
@@ -28,7 +36,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const AuthHomeMobile(),
+      home: const ScreenSizeNavigator(),
     );
   }
 }
